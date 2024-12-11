@@ -11,6 +11,14 @@ Class {
 }
 
 { #category : 'api' }
+JTTagger >> computeTagNameFrom: document [
+
+	^ 'Session '
+	  , ((document nodes anyOne descendantNodesDetect: [ :node |
+			   node name = 'sessioninfo' ]) attributeAt: #id)
+]
+
+{ #category : 'accessing' }
 JTTagger >> famixClassesByName [
 
 	^ cacheFamixClassesByName ifNil: [
@@ -34,12 +42,13 @@ JTTagger >> famixModel: anObject [
 { #category : 'api' }
 JTTagger >> import: aFileReference [
 
-	| document methods famixClass |
+	| document methods famixClass tagName |
 	aFileReference readStreamDo: [ :xmlStream |
 		document := (XMLDOMParser on: xmlStream)
 			            documentReadLimit: nil;
 			            parseDocument ].
-	sessionTag := famixModel tagNamed: 'Hello world'.
+	tagName := self computeTagNameFrom: document.
+	sessionTag := famixModel tagNamed: tagName.
 
 	methods := document nodes anyOne allNodesSelect: [ :node |
 		           node name = 'method' ].
