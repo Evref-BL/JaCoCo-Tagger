@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'famixModel',
 		'sessionTag',
-		'cacheFamixClassesByName'
+		'cacheFamixClassesByName',
+		'cacheFamixMethodsByName'
 	],
 	#category : 'JaCoCo-Tagger',
 	#package : 'JaCoCo-Tagger'
@@ -23,7 +24,7 @@ JTTagger >> famixClassesByName [
 
 	^ cacheFamixClassesByName ifNil: [
 		  cacheFamixClassesByName := (self famixModel allClasses collect: [
-			                              :c | c mooseNameWithDots -> c ])
+			                              :c | c mooseNameWithDots -> c. ])
 			                             asOrderedCollection asDictionary ]
 ]
 
@@ -42,7 +43,7 @@ JTTagger >> famixModel: anObject [
 { #category : 'api' }
 JTTagger >> import: aFileReference [
 
-	| document methods famixClass tagName |
+	| document methods famixClass famixMethod tagName |
 	aFileReference readStreamDo: [ :xmlStream |
 		document := (XMLDOMParser on: xmlStream)
 			            documentReadLimit: nil;
@@ -56,10 +57,13 @@ JTTagger >> import: aFileReference [
 	methods do: [ :xmlMethod | "is the method at least partially covered"
 		(xmlMethod nodes anySatisfy: [ :node |
 			 (node attributeAt: #covered) asInteger > 0 ]) ifTrue: [
-			| className |
+			| className methodName |
 			className := xmlMethod parent attributeAt: #name.
+			methodName := xmlMethod attributeAt: #name.
 			famixClass := self searchFamixClassFromName: className.
-			famixClass ifNotNil: [ sessionTag tagEntity: famixClass ] ] ]
+			famixClass ifNotNil: [ sessionTag tagEntity: famixClass ].
+			famixMethod := self searchFamixMethodsFromName: methodName.
+			famixMethod ifNotNil: [ sessionTag tagEntity: famixMethod ] ] ]
 ]
 
 { #category : 'api' }
@@ -70,5 +74,26 @@ JTTagger >> searchFamixClassFromName: className [
 	^ self famixClassesByName at: standardClassName ifAbsent: [nil].
 	^ self famixModel allClasses
 		  detect: [ :class | class mooseNameWithDots = standardClassName ]
+		  ifNone: [ nil ]
+]
+
+{ #category : 'api' }
+JTTagger >> searchFamixMethodsFromName: methodName [
+	| standardMethodName |
+	standardMethodName := methodName copyReplaceAll: '<' with: ''.
+	standardMethodName := standardMethodName copyReplaceAll: '>' with: ''.
+	
+	^ self famixModel allMethods
+		  detect: [ :c | c name = standardMethodName ]
+		  ifFound: [ :c | c ]
+		  ifNone: [ nil ]
+]
+
+{ #category : 'api' }
+JTTagger >> searchFamixMethodsFromName: className and: methodName [
+
+	^ self famixModel allClasses
+		  detect: [ :c | c name = methodName ]
+		  ifFound: [ :c | c ]
 		  ifNone: [ nil ]
 ]
