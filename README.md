@@ -9,6 +9,13 @@ JTTagger new "Create a tagger"
 	famixModel: myModel; "specify the model to tag"
 	import: 'JACOCO_TA_a08th02_16h05m58s_722\jacoco.xml' asFileReference. "give reference to the report to use for tagging"
 ```
+or 
+
+```st
+JTTagger new "Create a tagger"
+	famixModel: myModel; "specify the model to tag"
+	importFromDirectory: 'xmlReport/'. "give reference to the report folder to use for tagging"
+```
 
 Retrieve the tagged entities
 
