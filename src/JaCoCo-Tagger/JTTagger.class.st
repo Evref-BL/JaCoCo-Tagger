@@ -14,9 +14,9 @@ Class {
 { #category : 'api' }
 JTTagger >> computeTagNameFrom: document [
 
-	^ 'Session '
+	^ 'Story : '
 	  , ((document nodes anyOne descendantNodesDetect: [ :node |
-			   node name = 'sessioninfo' ]) attributeAt: #id)
+			    node name = 'sessioninfo' ]) attributeAt: #id)
 ]
 
 { #category : 'accessing' }
@@ -44,10 +44,10 @@ JTTagger >> famixModel: anObject [
 JTTagger >> import: aFileReference [
 
 	| document methods famixClass famixMethod tagName |
-	aFileReference readStreamDo: [ :xmlStream |
-		document := (XMLDOMParser on: xmlStream)
+	document := (XMLDOMParser on: aFileReference readStream)
 			            documentReadLimit: nil;
-			            parseDocument ].
+			            parseDocument.
+			
 	tagName := self computeTagNameFrom: document.
 	sessionTag := famixModel tagNamed: tagName.
 
