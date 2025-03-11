@@ -67,6 +67,18 @@ JTTagger >> import: aFileReference [
 ]
 
 { #category : 'api' }
+JTTagger >> importFromDirectory: aDirectoryPath [
+
+	| fileReferences |
+	fileReferences := (FileSystem disk workingDirectory / aDirectoryPath) children
+		select: [ :each | each extension = 'xml' ].
+
+	fileReferences do: [ :eachFile |
+		self import: eachFile.
+	].
+]
+
+{ #category : 'api' }
 JTTagger >> searchFamixClassFromName: className [
 
 	| standardClassName |
