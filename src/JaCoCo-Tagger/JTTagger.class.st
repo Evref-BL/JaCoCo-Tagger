@@ -83,10 +83,8 @@ JTTagger >> searchFamixClassFromName: className [
 
 	| standardClassName |
 	standardClassName := className copyReplaceAll: '/' with: '.'.
-	^ self famixClassesByName at: standardClassName ifAbsent: [nil].
-	^ self famixModel allClasses
-		  detect: [ :class | class mooseNameWithDots = standardClassName ]
-		  ifNone: [ nil ]
+	^ self famixClassesByName at: standardClassName ifAbsent: [ nil ].
+
 ]
 
 { #category : 'api' }
