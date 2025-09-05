@@ -14,8 +14,7 @@ Class {
 { #category : 'api' }
 JTTagger >> computeTagNameFrom: document [
 
-	^ 'Story : '
-	  , ((document nodes anyOne descendantNodesDetect: [ :node |
+	^ ((document nodes anyOne descendantNodesDetect: [ :node |
 			    node name = 'sessioninfo' ]) attributeAt: #id)
 ]
 
